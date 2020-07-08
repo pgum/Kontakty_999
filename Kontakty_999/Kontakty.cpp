@@ -4,11 +4,15 @@
 #include <fstream>
 
 using namespace std;
-vector<string> v_nrtel;
-vector<string> v_imie;
-vector<string> v_nazw;
-vector<string> v_mail;
-vector<int> v_nrwpisu;
+using Contact = int;
+using Detail = vector<string>;
+using Contacts = vector<Contact>;
+Detail v_nrtel;
+Detail v_imie;
+Detail v_nazw;
+Detail v_mail;
+Contacts v_nrwpisu;
+
 string nrtel;
 string imie;
 string nazw;
@@ -17,20 +21,135 @@ int nrwpisu = -1;
 char menu;
 int nrdousun;
 
-void print_table(vector<string> v_nrtel, vector<string> v_imie, vector<string> v_nazw, vector<string> v_mail)
+void print_record(string v_nrtel,string v_imie,string v_nazw,string v_mail){
+	cout << v_nrwpisu << ". " << v_imie << "  " << v_nazw << "  " << v_nrtel << "  " << v_mail << "\n";
+}
+void print_table(Detail v_nrtel, Detail v_imie, Detail v_nazw, Detail v_mail)
 {
 	for (int i = 0; i < v_imie.size(); i++)
 	{
-		cout << v_nrwpisu[i] << ". " << v_imie[i] << "  " << v_nazw[i] << "  " << v_nrtel[i] << "  " << v_mail[i] << "\n";
+		print_record(v_nrwpisu[i], v_imie[i], v_nazw[i], v_nrtel[i], v_mail[i]);
+		//print_record(i);
 	}
 }
 
+Contacts search(char field, string needle){
+	auto znaleziona = string::npos;
+	Contacts znalezione;
+	if (field == 'i')
+		{
+			for (int i = 0; i < size_of(v_imie); i++)
+			{
+				znaleziona = v_imie[i].find(needle);
+				if (znaleziona != string::npos)
+					znalezione.push_back(i);
+			}
+		return znalezione;
+		}
+		if (field == 'n')
+		{
+			for (int i = 0; i < v_nazw.size(); i++)
+			{
+				znaleziona = v_nazw[i].find(needle);
+				if (znaleziona != string::npos)
+					znalezione.push_back(i);
+			}
+		return znalezione;
+		}
+		if (field == 't')
+		{
+			for (int i = 0; i < v_nrtel.size(); i++)
+			{
+				znaleziona = v_nrtel[i].find(needle);
+				if (znaleziona != string::npos)
+					znalezione.push_back(i);
+			}
+		return znalezione;
+		}
+		if (field == 'm')
+		{
+			for (int i = 0; i < v_mail.size(); i++)
+			{
+				znaleziona = v_mail[i].find(needle);
+				if (znaleziona != string::npos)
+					znalezione.push_back(i);
+			}
+			return znalezione;
+		}
+}
 
+void clearAllGlobals(){
+	v_imie.clear();
+	v_nazw.clear();
+	v_nrtel.clear();
+	v_mail.clear();
+}
+void addOnePerson(string unique_postfix){
+	v_imie.push_back("imie_"+unique_postfix);
+	v_nazw.push_back("nazw_"+unique_postfix);
+	v_nrtel.push_back("nrtel_"+unique_postfix);
+	v_mail.push_back("mail_"+unique_postfix);
+}
+void create_default_database(){
+addOnePerson("dupa");
+addOnePerson("dupa2");
+addOnePerson("pedal");
+addOnePerson("cipka");
+}
+
+bool test_search_field_imie_found_one(){
+	cout << "test_search_field_imie_found_one ";
+	auto znalezione = search('i',"cipka");
+	return znalezione.size()==1;
+}
+bool test_search_field_nazw_found_two(){
+	cout << "test_search_field_nazw_found_two ";
+	auto znalezione = search('n',"dupa");
+	return znalezione.size()==2;
+}
+void run_all_tests(){
+	auto tests = { &test_search_field_imie_found_one,
+				   &test_search_field_nazw_found_two,
+				 };
+    for(tests: test){
+		clearAllGlobals();
+		create_default_database();
+		if(!test()){
+			cout << "NOK\n";
+		}else {
+			cout << "OK\n";
+		}
+	}
+}
+
+void search_ui(){
+		char stype;
+		string szukana;
+		size_t znaleziona;
+		print_table(v_nrtel, v_imie, v_nazw, v_mail);
+		cout << "Szukaj w: imionach - i, nazwiskach - n, numerach - t, mail - m \n";
+		cin >> stype;
+		cout << "Podaj szukana fraze: \n";
+		cin >> szukana;
+		auto foundContacts = search(stype, szukana);
+		if(foundContacts.size()==0){ cout << "nie ma :(\n"; }
+		if(foundContacts.size()>0){ 
+			for(auto i =0; i < foundContacts.size(); ++i){
+				cout << foundContacts[i] << ', ';
+			}
+		}
+}
 void display_menu()
 {
 
 	cout << "Wcisnij: n - nowy kontakt, e - edytuj istniejacy kontakt, u - usun kontakt, w - wyswietl liste, z - zapisz dane, o - odczytaj dane z pliku, s - szukaj, q - zamknij program \n";
 	cin >> menu;
+	
+	if (menu == '@')
+	{
+		run_all_tests();
+	}
+	
 	if (menu == 'n')
 	{
 		cout << "Podaj imie: ";
@@ -58,64 +177,8 @@ void display_menu()
 	}
 	if (menu == 's')
 	{
-		char stype;
-		string szukana;
-		size_t znaleziona;
-		print_table(v_nrtel, v_imie, v_nazw, v_mail);
-		cout << "Szukaj w: imionach - i, nazwiskach - n, numerach - t, mail - m \n";
-		cin >> stype;
-		cout << "Podaj szukana fraze: \n";
-		cin >> szukana;
-
-		if (stype == 'i')
-		{
-			for (int i = 0; i < v_imie.size(); i++)
-			{
-				znaleziona = v_imie[i].find(szukana);
-				if (znaleziona != string::npos)
-					cout << "Znalezionio w wierszu " << i << endl;
-			}
-			if (znaleziona == string::npos) {
-				cout << "Nie znaleziono\n";
-			}
-		}
-		if (stype == 'n')
-		{
-			for (int i = 0; i < v_nazw.size(); i++)
-			{
-				znaleziona = v_nazw[i].find(szukana);
-				if (znaleziona != string::npos)
-					cout << "Znalezionio w wierszu " << i << endl;
-			}
-			if (znaleziona == string::npos) {
-				cout << "Nie znaleziono\n";
-			}
-		}
-		if (stype == 't')
-		{
-			for (int i = 0; i < v_nrtel.size(); i++)
-			{
-				znaleziona = v_nrtel[i].find(szukana);
-				if (znaleziona != string::npos)
-					cout << "Znalezionio w wierszu " << i << endl;
-			}
-			if (znaleziona == string::npos) {
-				cout << "Nie znaleziono\n";
-			}
-		}
-		if (stype == 'm')
-		{
-			for (int i = 0; i < v_mail.size(); i++)
-			{
-				znaleziona = v_mail[i].find(szukana);
-				if (znaleziona != string::npos)
-					cout << "Znalezionio w wierszu " << i << endl;
-			}
-			if (znaleziona == string::npos) {
-				cout << "Nie znaleziono\n";
-			}
-		}
-
+	search_ui();
+	
 	}
 	if (menu == 'e')
 	{
@@ -215,6 +278,5 @@ void display_menu()
 
 int main()
 {
-
 	display_menu();
 }
