@@ -69,13 +69,51 @@ void display_menu()
 
 		if (stype == 'i')
 		{
-			for (int i = 0; i < sizeof(v_imie); i++)
+			for (int i = 0; i < v_imie.size(); i++)
 			{
 				znaleziona = v_imie[i].find(szukana);
 				if (znaleziona != string::npos)
 					cout << "Znalezionio w wierszu " << i << endl;
 			}
-
+			if (znaleziona == string::npos) {
+				cout << "Nie znaleziono\n";
+			}
+		}
+		if (stype == 'n')
+		{
+			for (int i = 0; i < v_nazw.size(); i++)
+			{
+				znaleziona = v_nazw[i].find(szukana);
+				if (znaleziona != string::npos)
+					cout << "Znalezionio w wierszu " << i << endl;
+			}
+			if (znaleziona == string::npos) {
+				cout << "Nie znaleziono\n";
+			}
+		}
+		if (stype == 't')
+		{
+			for (int i = 0; i < v_nrtel.size(); i++)
+			{
+				znaleziona = v_nrtel[i].find(szukana);
+				if (znaleziona != string::npos)
+					cout << "Znalezionio w wierszu " << i << endl;
+			}
+			if (znaleziona == string::npos) {
+				cout << "Nie znaleziono\n";
+			}
+		}
+		if (stype == 'm')
+		{
+			for (int i = 0; i < v_mail.size(); i++)
+			{
+				znaleziona = v_mail[i].find(szukana);
+				if (znaleziona != string::npos)
+					cout << "Znalezionio w wierszu " << i << endl;
+			}
+			if (znaleziona == string::npos) {
+				cout << "Nie znaleziono\n";
+			}
 		}
 
 	}
